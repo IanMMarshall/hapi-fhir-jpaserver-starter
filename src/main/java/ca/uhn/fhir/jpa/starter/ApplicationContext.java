@@ -20,7 +20,7 @@ public class ApplicationContext extends AnnotationConfigWebApplicationContext {
         }
 
         if (HapiProperties.getSubscriptionWebsocketEnabled()) {
-            register(ca.uhn.fhir.jpa.config.WebsocketDispatcherConfig.class);
+            register(ca.uhn.fhir.jpa.subscription.match.config.WebsocketDispatcherConfig.class);
         }
 
     }

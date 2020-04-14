@@ -4,11 +4,11 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.interceptor.api.IInterceptorBroadcaster;
 import ca.uhn.fhir.interceptor.api.IInterceptorService;
+import ca.uhn.fhir.jpa.api.config.DaoConfig;
+import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
+import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.binstore.BinaryStorageInterceptor;
 import ca.uhn.fhir.jpa.bulk.BulkDataExportProvider;
-import ca.uhn.fhir.jpa.dao.DaoConfig;
-import ca.uhn.fhir.jpa.dao.DaoRegistry;
-import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.interceptor.CascadingDeleteInterceptor;
 import ca.uhn.fhir.jpa.provider.GraphQLProvider;
 import ca.uhn.fhir.jpa.provider.JpaConformanceProviderDstu2;
@@ -22,9 +22,9 @@ import ca.uhn.fhir.jpa.provider.r4.JpaSystemProviderR4;
 import ca.uhn.fhir.jpa.provider.r5.JpaConformanceProviderR5;
 import ca.uhn.fhir.jpa.provider.r5.JpaSystemProviderR5;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
-import ca.uhn.fhir.jpa.subscription.SubscriptionInterceptorLoader;
-import ca.uhn.fhir.jpa.subscription.module.interceptor.SubscriptionDebugLogInterceptor;
-import ca.uhn.fhir.jpa.util.ResourceProviderFactory;
+import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamRegistry;
+import ca.uhn.fhir.jpa.subscription.util.SubscriptionDebugLogInterceptor;
+import ca.uhn.fhir.jpa.api.rp.ResourceProviderFactory;
 import ca.uhn.fhir.model.dstu2.composite.MetaDt;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
 import ca.uhn.fhir.rest.server.HardcodedServerAddressStrategy;
@@ -38,6 +38,8 @@ import ca.uhn.fhir.validation.IValidatorModule;
 import ca.uhn.fhir.validation.ResultSeverityEnum;
 import java.util.HashSet;
 import java.util.TreeSet;
+
+import org.hl7.fhir.common.hapi.validation.validator.FhirInstanceValidator;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.dstu3.model.Meta;
@@ -119,25 +121,26 @@ public class JpaRestfulServer extends RestfulServer {
           appCtx.getBean(DaoConfig.class));
       confProvider.setImplementationDescription("HAPI FHIR DSTU2 Server");
       setServerConformanceProvider(confProvider);
+
     } else if (fhirVersion == FhirVersionEnum.DSTU3) {
       IFhirSystemDao<Bundle, Meta> systemDao = appCtx
           .getBean("mySystemDaoDstu3", IFhirSystemDao.class);
       JpaConformanceProviderDstu3 confProvider = new JpaConformanceProviderDstu3(this, systemDao,
-          appCtx.getBean(DaoConfig.class));
+          appCtx.getBean(DaoConfig.class), appCtx.getBean(ISearchParamRegistry.class));
       confProvider.setImplementationDescription("HAPI FHIR DSTU3 Server");
       setServerConformanceProvider(confProvider);
     } else if (fhirVersion == FhirVersionEnum.R4) {
       IFhirSystemDao<org.hl7.fhir.r4.model.Bundle, org.hl7.fhir.r4.model.Meta> systemDao = appCtx
           .getBean("mySystemDaoR4", IFhirSystemDao.class);
       JpaConformanceProviderR4 confProvider = new JpaConformanceProviderR4(this, systemDao,
-          appCtx.getBean(DaoConfig.class));
+          appCtx.getBean(DaoConfig.class), appCtx.getBean(ISearchParamRegistry.class));
       confProvider.setImplementationDescription("HAPI FHIR R4 Server");
       setServerConformanceProvider(confProvider);
     } else if (fhirVersion == FhirVersionEnum.R5) {
       IFhirSystemDao<org.hl7.fhir.r5.model.Bundle, org.hl7.fhir.r5.model.Meta> systemDao = appCtx
           .getBean("mySystemDaoR5", IFhirSystemDao.class);
       JpaConformanceProviderR5 confProvider = new JpaConformanceProviderR5(this, systemDao,
-          appCtx.getBean(DaoConfig.class));
+          appCtx.getBean(DaoConfig.class), appCtx.getBean(ISearchParamRegistry.class));
       confProvider.setImplementationDescription("HAPI FHIR R5 Server");
       setServerConformanceProvider(confProvider);
     } else {
@@ -257,11 +260,6 @@ public class JpaRestfulServer extends RestfulServer {
     if (HapiProperties.getSubscriptionWebsocketEnabled() ||
         HapiProperties.getSubscriptionEmailEnabled() ||
         HapiProperties.getSubscriptionRestHookEnabled()) {
-      // Loads subscription interceptors (SubscriptionActivatingInterceptor, SubscriptionMatcherInterceptor)
-      // with activation of scheduled subscription
-      SubscriptionInterceptorLoader subscriptionInterceptorLoader = appCtx
-          .getBean(SubscriptionInterceptorLoader.class);
-      subscriptionInterceptorLoader.registerInterceptors();
 
       // Subscription debug logging
       IInterceptorService interceptorService = appCtx.getBean(IInterceptorService.class);
@@ -288,16 +286,20 @@ public class JpaRestfulServer extends RestfulServer {
     IValidatorModule validatorModule;
     switch (fhirVersion) {
             case DSTU2:
-                validatorModule = appCtx.getBean("myInstanceValidatorDstu2", IValidatorModule.class);
+//                validatorModule = appCtx.getBean("myInstanceValidatorDstu2", IValidatorModule.class);
+              validatorModule = new FhirInstanceValidator(FhirContext.forDstu2());
                 break;
       case DSTU3:
-        validatorModule = appCtx.getBean("myInstanceValidatorDstu3", IValidatorModule.class);
+//        validatorModule = appCtx.getBean("myInstanceValidatorDstu3", IValidatorModule.class);
+        validatorModule = new FhirInstanceValidator(FhirContext.forDstu3());
         break;
       case R4:
-        validatorModule = appCtx.getBean("myInstanceValidatorR4", IValidatorModule.class);
+//        validatorModule = appCtx.getBean("myInstanceValidatorR4", IValidatorModule.class);
+        validatorModule = new FhirInstanceValidator(FhirContext.forR4());
         break;
       case R5:
-        validatorModule = appCtx.getBean("myInstanceValidatorR5", IValidatorModule.class);
+//        validatorModule = appCtx.getBean("myInstanceValidatorR5", IValidatorModule.class);
+        validatorModule = new FhirInstanceValidator(FhirContext.forR5());
         break;
             // These versions are not supported by HAPI FHIR JPA
             case DSTU2_HL7ORG:

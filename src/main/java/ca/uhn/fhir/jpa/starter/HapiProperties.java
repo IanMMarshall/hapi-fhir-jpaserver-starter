@@ -73,6 +73,10 @@ public class HapiProperties {
   static final String BULK_EXPORT_ENABLED = "bulk.export.enabled";
   static final String EXPIRE_SEARCH_RESULTS_AFTER_MINS = "retain_cached_searches_mins";
   static final String MAX_BINARY_SIZE = "max_binary_size";
+  static final String ELASTICSEARCH_HOST = "elasticsearch.rest_host";
+  static final String ELASTICSEARCH_PORT = "elasticsearch.rest_port";
+  static final String ELASTICSEARCH_USERNAME = "elasticsearch.username";
+  static final String ELASTICSEARCH_PASSWORD = "elasticsearch.PASSWORD";
   private static Properties ourProperties;
 
   public static boolean isElasticSearchEnabled() {
@@ -102,9 +106,9 @@ public class HapiProperties {
     if (isElasticSearchEnabled()) {
       ElasticsearchHibernatePropertiesBuilder builder = new ElasticsearchHibernatePropertiesBuilder();
       builder.setRequiredIndexStatus(getPropertyEnum("elasticsearch.required_index_status", ElasticsearchIndexStatus.class, ElasticsearchIndexStatus.YELLOW));
-      builder.setRestUrl(getProperty("elasticsearch.rest_url"));
-      builder.setUsername(getProperty("elasticsearch.username"));
-      builder.setPassword(getProperty("elasticsearch.password"));
+      builder.setRestUrl("http://" + getElasticsearchHost() + ":" + getElasticsearchPort());
+      builder.setUsername(getElasticsearchUsername());
+      builder.setPassword(getElasticsearchPassword());
       builder.setIndexSchemaManagementStrategy(getPropertyEnum("elasticsearch.schema_management_strategy", IndexSchemaManagementStrategy.class, IndexSchemaManagementStrategy.CREATE));
       builder.setDebugRefreshAfterWrite(getPropertyBoolean("elasticsearch.debug.refresh_after_write", false));
       builder.setDebugPrettyPrintJsonLog(getPropertyBoolean("elasticsearch.debug.pretty_print_json_log", false));
@@ -112,6 +116,22 @@ public class HapiProperties {
     }
 
     return retVal;
+  }
+
+  public static String getElasticsearchHost() {
+    return HapiProperties.getProperty(ELASTICSEARCH_HOST, "localhost");
+  }
+
+  public static String getElasticsearchPort() {
+    return HapiProperties.getProperty(ELASTICSEARCH_PORT, "9200");
+  }
+
+  public static String getElasticsearchUsername() {
+    return HapiProperties.getProperty(ELASTICSEARCH_USERNAME, "elastic");
+  }
+
+  public static String getElasticsearchPassword() {
+    return HapiProperties.getProperty(ELASTICSEARCH_PASSWORD, "changeme");
   }
 
   private static Properties getProperties() {

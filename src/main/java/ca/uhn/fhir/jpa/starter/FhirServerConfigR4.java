@@ -3,6 +3,7 @@ package ca.uhn.fhir.jpa.starter;
 import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.jpa.config.BaseJavaConfigR4;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
+import ca.uhn.fhir.jpa.search.lastn.ElasticsearchSvcImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +12,8 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+import java.io.IOException;
+import java.util.Properties;
 
 @Configuration
 public class FhirServerConfigR4 extends BaseJavaConfigR4 {
@@ -53,5 +56,19 @@ public class FhirServerConfigR4 extends BaseJavaConfigR4 {
         retVal.setEntityManagerFactory(entityManagerFactory);
         return retVal;
     }
+
+  @Bean()
+  public ElasticsearchSvcImpl elasticsearchSvc() throws IOException {
+      if (HapiProperties.isElasticSearchEnabled()) {
+        String elasticsearchHost = HapiProperties.getElasticsearchHost();
+        String elasticsearchUserId = HapiProperties.getElasticsearchUsername();
+        String elasticsearchPassword = HapiProperties.getElasticsearchPassword();
+        Integer elasticsearchPort = Integer.valueOf(HapiProperties.getElasticsearchPort());
+
+        return new ElasticsearchSvcImpl(elasticsearchHost, elasticsearchPort, elasticsearchUserId, elasticsearchPassword);
+      } else {
+        return null;
+      }
+  }
 
 }

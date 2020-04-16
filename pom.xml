@@ -421,6 +421,8 @@
                     <ignoredResourcePatterns>
                         <ignoredResourcePattern>.*\.txt$</ignoredResourcePattern>
                         <ignoredResourcePattern>.*\.html$</ignoredResourcePattern>
+                        <ignoredResource>.*/favicon.ico$</ignoredResource>
+                        <ignoredResource>Log4j-charsets.properties</ignoredResource>
                     </ignoredResourcePatterns>
                 </configuration>
             </plugin>

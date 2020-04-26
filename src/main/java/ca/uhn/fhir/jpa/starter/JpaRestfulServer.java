@@ -270,8 +270,9 @@ public class JpaRestfulServer extends RestfulServer {
     DaoRegistry daoRegistry = appCtx.getBean(DaoRegistry.class);
     IInterceptorBroadcaster interceptorBroadcaster = appCtx.getBean(IInterceptorBroadcaster.class);
     if (HapiProperties.getAllowCascadingDeletes()) {
+      FhirContext myContext = FhirContext.forR4();
       CascadingDeleteInterceptor cascadingDeleteInterceptor = new CascadingDeleteInterceptor(
-          daoRegistry, interceptorBroadcaster);
+          myContext, daoRegistry, interceptorBroadcaster);
       getInterceptorService().registerInterceptor(cascadingDeleteInterceptor);
     }
 

@@ -3,6 +3,7 @@ package ca.uhn.fhir.jpa.starter;
 import ca.uhn.fhir.jpa.binstore.DatabaseBlobBinaryStorageSvcImpl;
 import ca.uhn.fhir.jpa.binstore.IBinaryStorageSvc;
 import ca.uhn.fhir.jpa.api.config.DaoConfig;
+import ca.uhn.fhir.jpa.model.config.PartitionSettings;
 import ca.uhn.fhir.jpa.model.entity.ModelConfig;
 import ca.uhn.fhir.jpa.subscription.channel.config.SubscriptionChannelConfig;
 import ca.uhn.fhir.jpa.subscription.channel.subscription.SubscriptionDeliveryHandlerFactory;
@@ -215,4 +216,10 @@ public class FhirServerConfigCommon {
 
     return null;
   }
+
+  @Bean
+  public PartitionSettings partitionSettings() {
+    return new PartitionSettings();
+  }
+
 }

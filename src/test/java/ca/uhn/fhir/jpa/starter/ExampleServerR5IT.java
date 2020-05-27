@@ -62,7 +62,7 @@ public class ExampleServerR5IT {
         /*
          * Create topic
          */
-        Topic topic = new Topic();
+        SubscriptionTopic topic = new SubscriptionTopic();
         topic.getResourceTrigger().getQueryCriteria().setCurrent("Observation?status=final");
 
         /*
@@ -71,14 +71,12 @@ public class ExampleServerR5IT {
         Subscription subscription = new Subscription();
         subscription.getTopic().setResource(topic);
         subscription.setReason("Monitor new neonatal function (note, age will be determined by the monitor)");
-        subscription.setStatus(Subscription.SubscriptionStatus.REQUESTED);
+        subscription.setStatus(Enumerations.SubscriptionState.REQUESTED);
 
-        Subscription.SubscriptionChannelComponent channel = new Subscription.SubscriptionChannelComponent();
-        channel.getType().addCoding()
-                .setSystem("http://terminology.hl7.org/CodeSystem/subscription-channel-type")
+        //Subscription.SubscriptionChannelComponent channel = new Subscription.SubscriptionChannelComponent();
+        subscription.getChannelType().setSystem("http://terminology.hl7.org/CodeSystem/subscription-channel-type")
                 .setCode("websocket");
-        channel.getPayload().setContentType("application/json");
-        subscription.setChannel(channel);
+        subscription.setContentType("application/json");
 
         MethodOutcome methodOutcome = ourClient.create().resource(subscription).execute();
         IIdType mySubscriptionId = methodOutcome.getId();

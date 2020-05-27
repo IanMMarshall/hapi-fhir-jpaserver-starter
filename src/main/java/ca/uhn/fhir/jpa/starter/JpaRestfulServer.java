@@ -10,6 +10,7 @@ import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.binstore.BinaryStorageInterceptor;
 import ca.uhn.fhir.jpa.bulk.BulkDataExportProvider;
 import ca.uhn.fhir.jpa.interceptor.CascadingDeleteInterceptor;
+import ca.uhn.fhir.jpa.interceptor.PerformanceTracingLoggingInterceptor;
 import ca.uhn.fhir.jpa.provider.GraphQLProvider;
 import ca.uhn.fhir.jpa.provider.JpaConformanceProviderDstu2;
 import ca.uhn.fhir.jpa.provider.JpaSystemProviderDstu2;
@@ -24,7 +25,7 @@ import ca.uhn.fhir.jpa.provider.r5.JpaSystemProviderR5;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamRegistry;
 import ca.uhn.fhir.jpa.subscription.util.SubscriptionDebugLogInterceptor;
-import ca.uhn.fhir.jpa.api.rp.ResourceProviderFactory;
+import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
 import ca.uhn.fhir.model.dstu2.composite.MetaDt;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
 import ca.uhn.fhir.rest.server.HardcodedServerAddressStrategy;
@@ -343,11 +344,21 @@ public class JpaRestfulServer extends RestfulServer {
           Collections.unmodifiableSet(new TreeSet<>(allowedBundleTypes)));
     }
   
-        // Bulk Export
-        if (HapiProperties.getBulkExportEnabled()) {
-            registerProvider(appCtx.getBean(BulkDataExportProvider.class));
-        }
-
+    // Bulk Export
+    if (HapiProperties.getBulkExportEnabled()) {
+        registerProvider(appCtx.getBean(BulkDataExportProvider.class));
     }
+
+    if (HapiProperties.getSqlPerformanceTracingEnabled()) {
+      PerformanceTracingLoggingInterceptor performanceTracingLoggingInterceptor = new PerformanceTracingLoggingInterceptor();
+      registerInterceptor(performanceTracingLoggingInterceptor);
+    }
+
+    if (HapiProperties.getRequestTrackingEnabled()) {
+      RequestTrackingInterceptor requestTrackingInterceptor = new RequestTrackingInterceptor();
+      registerInterceptor(requestTrackingInterceptor);
+    }
+
+  }
 
 }

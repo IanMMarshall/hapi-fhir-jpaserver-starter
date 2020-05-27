@@ -77,6 +77,8 @@ public class HapiProperties {
   static final String ELASTICSEARCH_PORT = "elasticsearch.rest_port";
   static final String ELASTICSEARCH_USERNAME = "elasticsearch.username";
   static final String ELASTICSEARCH_PASSWORD = "elasticsearch.PASSWORD";
+  static final String INTERCEPTOR_PERFORMANCE_TRACING = "interceptor.performance_tracing.enabled";
+  static final String INTERCEPTOR_REQUEST_TRACKING = "interceptor.request_tracking.enabled";
   private static Properties ourProperties;
 
   public static boolean isElasticSearchEnabled() {
@@ -505,5 +507,14 @@ public class HapiProperties {
   public static boolean getBulkExportEnabled() {
     return HapiProperties.getBooleanProperty(BULK_EXPORT_ENABLED, true);
   }
+
+  public static boolean getSqlPerformanceTracingEnabled() {
+    return HapiProperties.getBooleanProperty(INTERCEPTOR_PERFORMANCE_TRACING, false);
+  }
+
+  public static boolean getRequestTrackingEnabled() {
+    return HapiProperties.getBooleanProperty(INTERCEPTOR_REQUEST_TRACKING, false);
+  }
+
 }
 

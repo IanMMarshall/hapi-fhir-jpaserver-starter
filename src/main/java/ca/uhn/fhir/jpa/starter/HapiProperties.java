@@ -508,6 +508,10 @@ public class HapiProperties {
     return HapiProperties.getBooleanProperty(BULK_EXPORT_ENABLED, true);
   }
 
+  public static boolean isFhirPathFilterInterceptorEnabled() {
+    return HapiProperties.getBooleanProperty("fhirpath_interceptor.enabled", false);
+  }
+
   public static boolean getSqlPerformanceTracingEnabled() {
     return HapiProperties.getBooleanProperty(INTERCEPTOR_PERFORMANCE_TRACING, false);
   }

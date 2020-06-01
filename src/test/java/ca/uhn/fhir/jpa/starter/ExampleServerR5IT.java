@@ -14,7 +14,12 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.hl7.fhir.instance.model.api.IIdType;
-import org.hl7.fhir.r5.model.*;
+import org.hl7.fhir.r5.model.Bundle;
+import org.hl7.fhir.r5.model.Enumerations;
+import org.hl7.fhir.r5.model.Observation;
+import org.hl7.fhir.r5.model.Patient;
+import org.hl7.fhir.r5.model.Subscription;
+import org.hl7.fhir.r5.model.SubscriptionTopic;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -72,9 +77,8 @@ public class ExampleServerR5IT {
         subscription.getTopic().setResource(topic);
         subscription.setReason("Monitor new neonatal function (note, age will be determined by the monitor)");
         subscription.setStatus(Enumerations.SubscriptionState.REQUESTED);
-
-        //Subscription.SubscriptionChannelComponent channel = new Subscription.SubscriptionChannelComponent();
-        subscription.getChannelType().setSystem("http://terminology.hl7.org/CodeSystem/subscription-channel-type")
+        subscription.getChannelType()
+                .setSystem("http://terminology.hl7.org/CodeSystem/subscription-channel-type")
                 .setCode("websocket");
         subscription.setContentType("application/json");
 

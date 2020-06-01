@@ -1,16 +1,60 @@
 <configuration scan="true" scanPeriod="30 seconds">
 
-	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+<!--	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
 			<level>INFO</level>
 		</filter>
 		<encoder>
 			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [%file:%line] %msg%n</pattern>
 		</encoder>
+	</appender> -->
+
+	<appender name="STDOUT_SYNC" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n%xEx{full, sun.reflect, org.junit, org.eclipse, java.lang.reflect.Method, org.springframework, org.hibernate, com.sun.proxy, org.attoparser, org.thymeleaf}</pattern>
+		</encoder>
+	</appender>
+	<appender name="STDOUT" class="ch.qos.logback.classic.AsyncAppender">
+		<includeCallerData>false</includeCallerData>
+		<appender-ref ref="STDOUT_SYNC" />
 	</appender>
 
+	<!--
+	LOG: hapi-fhir-jpaserver-starter.log
+	We create a file called hapi-fhir-jpaserver-starter.log that will have (by default) all INFO level
+	messages. This file is written asynchronously using a blocking queue for better
+	performance.
+	-->
+	<appender name="RUNTIME_SYNC" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>INFO</level>
+		</filter>
+		<file>logs/hapi-fhir-jpaserver-starter.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>logs/hapi-fhir-jpaserver-starter.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n%xEx{full, sun.reflect, org.junit, org.eclipse, java.lang.reflect.Method, org.springframework, org.hibernate, com.sun.proxy, org.attoparser, org.thymeleaf}</pattern>
+		</encoder>
+	</appender>
+	<appender name="RUNTIME" class="ch.qos.logback.classic.AsyncAppender">
+		<discardingThreshold>0</discardingThreshold>
+		<includeCallerData>false</includeCallerData>
+		<appender-ref ref="RUNTIME_SYNC" />
+	</appender>
+
+	<!--
+	Send all remaining logs to a few places 
+	-->
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />
+		<appender-ref ref="RUNTIME" />
 	</root>
+
+
+<!--	<root level="INFO">
+		<appender-ref ref="STDOUT" />
+	</root> -->
 
 </configuration>

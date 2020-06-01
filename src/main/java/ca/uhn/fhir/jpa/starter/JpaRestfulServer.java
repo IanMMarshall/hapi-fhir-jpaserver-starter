@@ -7,7 +7,7 @@ import ca.uhn.fhir.interceptor.api.IInterceptorService;
 import ca.uhn.fhir.jpa.api.config.DaoConfig;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
-import ca.uhn.fhir.jpa.api.rp.ResourceProviderFactory;
+import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
 import ca.uhn.fhir.jpa.binstore.BinaryStorageInterceptor;
 import ca.uhn.fhir.jpa.bulk.BulkDataExportProvider;
 import ca.uhn.fhir.jpa.interceptor.CascadingDeleteInterceptor;
@@ -319,7 +319,6 @@ public class JpaRestfulServer extends RestfulServer {
       registerProvider(appCtx.getBean(BulkDataExportProvider.class));
     }
 
-  }
     if (HapiProperties.getSqlPerformanceTracingEnabled()) {
       PerformanceTracingLoggingInterceptor performanceTracingLoggingInterceptor = new PerformanceTracingLoggingInterceptor();
       registerInterceptor(performanceTracingLoggingInterceptor);

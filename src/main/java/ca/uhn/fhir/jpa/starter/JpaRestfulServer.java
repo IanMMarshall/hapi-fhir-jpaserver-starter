@@ -319,14 +319,18 @@ public class JpaRestfulServer extends RestfulServer {
       registerProvider(appCtx.getBean(BulkDataExportProvider.class));
     }
 
-    if (HapiProperties.getSqlPerformanceTracingEnabled()) {
+    if (HapiProperties.isSqlPerformanceTracingEnabled()) {
       PerformanceTracingLoggingInterceptor performanceTracingLoggingInterceptor = new PerformanceTracingLoggingInterceptor();
       registerInterceptor(performanceTracingLoggingInterceptor);
     }
 
-    if (HapiProperties.getRequestTrackingEnabled()) {
+    if (HapiProperties.isRequestTrackingEnabled()) {
       RequestTrackingInterceptor requestTrackingInterceptor = new RequestTrackingInterceptor();
       registerInterceptor(requestTrackingInterceptor);
+    }
+
+    if (HapiProperties.isLastNEnabled()) {
+      daoConfig.setLastNEnabled(true);
     }
 
   }

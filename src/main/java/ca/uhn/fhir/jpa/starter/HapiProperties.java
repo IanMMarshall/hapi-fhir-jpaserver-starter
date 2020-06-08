@@ -79,6 +79,7 @@ public class HapiProperties {
   static final String ELASTICSEARCH_PASSWORD = "elasticsearch.PASSWORD";
   static final String INTERCEPTOR_PERFORMANCE_TRACING = "interceptor.performance_tracing.enabled";
   static final String INTERCEPTOR_REQUEST_TRACKING = "interceptor.request_tracking.enabled";
+  static final String LASTN_ENABLED= "lastn.enabled";
   private static Properties ourProperties;
 
   public static boolean isElasticSearchEnabled() {
@@ -512,12 +513,16 @@ public class HapiProperties {
     return HapiProperties.getBooleanProperty("fhirpath_interceptor.enabled", false);
   }
 
-  public static boolean getSqlPerformanceTracingEnabled() {
+  public static boolean isSqlPerformanceTracingEnabled() {
     return HapiProperties.getBooleanProperty(INTERCEPTOR_PERFORMANCE_TRACING, false);
   }
 
-  public static boolean getRequestTrackingEnabled() {
+  public static boolean isRequestTrackingEnabled() {
     return HapiProperties.getBooleanProperty(INTERCEPTOR_REQUEST_TRACKING, false);
+  }
+
+  public static boolean isLastNEnabled() {
+    return HapiProperties.getBooleanProperty(LASTN_ENABLED, false);
   }
 
 }

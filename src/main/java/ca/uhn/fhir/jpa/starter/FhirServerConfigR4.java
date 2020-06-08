@@ -12,8 +12,6 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import java.io.IOException;
-import java.util.Properties;
 
 @Configuration
 public class FhirServerConfigR4 extends BaseJavaConfigR4 {
@@ -58,12 +56,12 @@ public class FhirServerConfigR4 extends BaseJavaConfigR4 {
     }
 
   @Bean()
-  public ElasticsearchSvcImpl elasticsearchSvc() throws IOException {
+  public ElasticsearchSvcImpl elasticsearchSvc() {
       if (HapiProperties.isElasticSearchEnabled()) {
         String elasticsearchHost = HapiProperties.getElasticsearchHost();
         String elasticsearchUserId = HapiProperties.getElasticsearchUsername();
         String elasticsearchPassword = HapiProperties.getElasticsearchPassword();
-        Integer elasticsearchPort = Integer.valueOf(HapiProperties.getElasticsearchPort());
+        int elasticsearchPort = Integer.parseInt(HapiProperties.getElasticsearchPort());
 
         return new ElasticsearchSvcImpl(elasticsearchHost, elasticsearchPort, elasticsearchUserId, elasticsearchPassword);
       } else {

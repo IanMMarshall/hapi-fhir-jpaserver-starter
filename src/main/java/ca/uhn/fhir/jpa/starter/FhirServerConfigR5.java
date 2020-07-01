@@ -7,6 +7,7 @@ import ca.uhn.fhir.jpa.search.lastn.ElasticsearchSvcImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
@@ -48,8 +49,9 @@ public class FhirServerConfigR5 extends BaseJavaConfigR5 {
         return retVal;
     }
 
+    @Primary
     @Bean()
-    public JpaTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
+    public JpaTransactionManager hapiTransactionManager(EntityManagerFactory entityManagerFactory) {
         JpaTransactionManager retVal = new JpaTransactionManager();
         retVal.setEntityManagerFactory(entityManagerFactory);
         return retVal;

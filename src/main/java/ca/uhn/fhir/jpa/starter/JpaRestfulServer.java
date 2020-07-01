@@ -9,7 +9,7 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
 import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
 import ca.uhn.fhir.jpa.binstore.BinaryStorageInterceptor;
-import ca.uhn.fhir.jpa.bulk.BulkDataExportProvider;
+import ca.uhn.fhir.jpa.bulk.provider.BulkDataExportProvider;
 import ca.uhn.fhir.jpa.interceptor.CascadingDeleteInterceptor;
 import ca.uhn.fhir.jpa.interceptor.PerformanceTracingLoggingInterceptor;
 import ca.uhn.fhir.jpa.provider.GraphQLProvider;

@@ -20,9 +20,9 @@ import org.hl7.fhir.r5.model.Observation;
 import org.hl7.fhir.r5.model.Patient;
 import org.hl7.fhir.r5.model.Subscription;
 import org.hl7.fhir.r5.model.SubscriptionTopic;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 import java.nio.file.Paths;
@@ -30,7 +30,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import static ca.uhn.fhir.util.TestUtil.waitForSize;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ExampleServerR5IT {
 
@@ -125,12 +125,12 @@ public class ExampleServerR5IT {
         ourClient.delete().resourceById(mySubscriptionId).execute();
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() throws Exception {
         ourServer.stop();
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() throws Exception {
         String path = Paths.get("").toAbsolutePath().toString();
 
